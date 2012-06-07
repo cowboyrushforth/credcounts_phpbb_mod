@@ -25,11 +25,11 @@ $lang = array_merge($lang, array(
 
 // acp_styles
 $lang = array_merge($lang, array(
-	'IMG_ICON_CONTACT_CREDCOUNTS'				=> 'CredCounts Profile Link',
+	'IMG_ICON_CONTACT_CREDCOUNTS'				=> 'CredCounts.com Profile Link',
 ));
 
 // everywhere else
 $lang = array_merge($lang, array(
-	'CREDCOUNTS'				=> 'CredCounts',
-	'UCP_CREDCOUNTS'			=> 'CredCounts Email',
+	'CREDCOUNTS'				=> 'CredCounts.com',
+	'UCP_CREDCOUNTS'			=> 'CredCounts.com Email',
 ));
