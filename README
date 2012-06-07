@@ -1,0 +1,8 @@
+steps to install:
+------------------
+
+1. upload files in root/* to your <web_root>/
+2. open install.xml in your local webbrowser
+3. follow instructions in your webbrowser for editing files in your <web_root>
+4. run http://yoursitename.com/install.php for some more settings to be added
+5. remove http://yoursitename.com/install.php or change its permissions to 000
