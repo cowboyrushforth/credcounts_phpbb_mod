@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+<!--NOTICE: Please open this file in your web browser. If presented with a security warning, you may safely tell it to allow the blocked content.-->
+<!--For security purposes, please check: http://www.phpbb.com/mods/ for the latest version of this MOD.\nAlthough MODs are checked before being allowed in the MODs Database there is no guarantee that there are no security problems within the MOD.\nNo support will be given for MODs not found within the MODs Database which can be found at http://www.phpbb.com/mods/-->
+<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.2.5.xsd">
+	<header>
+		<license><![CDATA[http://opensource.org/licenses/gpl-license.php GNU General Public License v2]]></license>
+		<title lang="en"><![CDATA[CredCounts Profile Link]]></title>
+		<description lang="en"><![CDATA[This MOD will add a button to the users CredCounts profile page. This can be set in the user control panel.]]></description>
+                <author-notes lang="en"><![CDATA[Based on the youtube_profile_link by Jeroen]]></author-notes>
+		<author-group>
+			<author>
+				<realname><![CDATA[Scott Rusfhorth]]></realname>
+			</author>
+		</author-group>
+		<mod-version>1.0.0</mod-version>
+		<installation>
+			<level>easy</level>
+			<time>600</time>
+			<target-version>3.0.10</target-version>
+		</installation>
+		<history>
+			<entry>
+				<date>2012-06-06</date>
+				<rev-version>1.0.0</rev-version>
+				<changelog lang="en">
+					<change><![CDATA[Released]]></change>
+				</changelog>
+			</entry>
+		</history>
+	</header>
+	<action-group>
+		<copy>
+			<file from="root/*.*" to="*.*"/>
+		</copy>
+		<open src="memberlist.php">
+			<edit>
+				<find><![CDATA[$user->setup(array('memberlist', 'groups'));]]></find>
+				<action type="after-add"><![CDATA[
+$user->add_lang('mods/credcounts');]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),]]></find>
+				<action type="after-add"><![CDATA[		'USER_CREDCOUNTS'		=> $data['user_credcounts'],
+		'U_CREDCOUNTS'			=> ($data['user_credcounts']) ? 'http://www.credcounts.com/index.php?r=reports/view&id=' . urlencode($data['user_credcounts']) : '',]]></action>
+			</edit>
+		</open>
+		<open src="viewtopic.php">
+			<edit>
+				<find><![CDATA[	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=bump&amp;f=$forum_id&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : '')
+);]]></find>
+				<action type="after-add"><![CDATA[$user->add_lang('mods/credcounts');
+$template->assign_var('CREDCOUNTS_IMG', $user->img('icon_contact_credcounts', 'CREDCOUNTS'));]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[				'allow_pm'			=> 0,
+			);]]></find>
+				<action type="after-add"><![CDATA[			$user_cache[$poster_id]['credcounts'] = '';]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[				'author_profile'	=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour']),
+			);]]></find>
+				<action type="after-add"><![CDATA[			$user_cache[$poster_id]['credcounts'] = 'http://www.credcounts.com/index.php?r=reports/view&id=' . urlencode($row['user_credcounts']);]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[		'L_IGNORE_POST'		=> ($row['hide_post']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
+	);]]></find>
+				<action type="after-add"><![CDATA[	$postrow['U_CREDCOUNTS'] = $user_cache[$poster_id]['credcounts'];]]></action>
+			</edit>
+		</open>
+		<open src="adm/style/acp_users_profile.html">
+			<edit>
+				<find><![CDATA[		<dd><input type="text" id="jabber" name="jabber" value="{JABBER}" /></dd>
+	</dl>]]></find>
+				<action type="after-add"><![CDATA[	<dl>
+		<dt><label for="credcounts">{L_UCP_CREDCOUNTS}:</label></dt>
+		<dd><input type="text" id="credcounts" name="credcounts" value="{CREDCOUNTS}" /></dd>
+	</dl>]]></action>
+			</edit>
+		</open>
+		<open src="includes/acp/acp_styles.php">
+			<edit>
+				<find><![CDATA[		);]]></find>
+				<action type="after-add"><![CDATA[		$user->add_lang('mods/credcounts');
+		$this->imageset_keys['icons'][] = 'icon_contact_credcounts';]]></action>
+			</edit>
+		</open>
+		<open src="includes/acp/acp_users.php">
+			<edit>
+				<find><![CDATA[				$data['user_birthday']	= sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);]]></find>
+				<action type="after-add"><![CDATA[				$user->add_lang('mods/credcounts');
+				$data['credcounts'] = request_var('credcounts', $user_row['user_credcounts']);]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[						'yim'			=> array('string', true, 5, 255),]]></find>
+				<action type="after-add"><![CDATA[						'credcounts'		=> array('string', true, 1, 255),]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[						);]]></find>
+				<action type="after-add"><![CDATA[						$sql_ary['user_credcounts'] = $data['credcounts'];]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[				);]]></find>
+				<action type="after-add"><![CDATA[				$template->assign_var('CREDCOUNTS', $data['credcounts']);]]></action>
+			</edit>
+		</open>
+		<open src="includes/ucp/ucp_pm_viewmessage.php">
+			<edit>
+				<find><![CDATA[$user->add_lang(array('viewtopic', 'memberlist'));]]></find>
+				<action type="after-add"><![CDATA[	$user->add_lang('mods/credcounts');
+	$template->assign_var('U_CREDCOUNTS', ($user_info['user_credcounts']) ? 'http://www.credcounts.com/index.php?r=reports/view&id=' . urlencode($user_info['user_credcounts']) : '');]]></action>
+			</edit>
+		</open>
+		<open src="includes/ucp/ucp_profile.php">
+			<edit>
+				<find><![CDATA[					'interests'		=> utf8_normalize_nfc(request_var('interests', $user->data['user_interests'], true)),
+				);]]></find>
+				<action type="after-add"><![CDATA[				$user->add_lang('mods/credcounts');
+				$data['credcounts'] = request_var('credcounts', $user->data['user_credcounts']);]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[						'yim'			=> array('string', true, 5, 255),]]></find>
+				<action type="after-add"><![CDATA[						'credcounts'		=> array('string', true, 1, 255),]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[							'user_notify_type'	=> $data['notify'],
+						);]]></find>
+				<action type="after-add"><![CDATA[						$sql_ary['user_credcounts'] = $data['credcounts'];]]></action>
+			</edit>
+			<edit>
+				<find><![CDATA[					'INTERESTS'	=> $data['interests'],
+				));]]></find>
+				<action type="after-add"><![CDATA[				$template->assign_var('CREDCOUNTS', $data['credcounts']);]]></action>
+			</edit>
+		</open>
+		<open src="styles/prosilver/imageset/imageset.cfg">
+			<edit>
+				<find><![CDATA[img_icon_user_warn = icon_user_warn.gif*20*20]]></find>
+				<action type="after-add"><![CDATA[img_icon_contact_credcounts = icon_contact_credcounts.gif*20*20]]></action>
+			</edit>
+		</open>
+		<open src="styles/prosilver/template/memberlist_view.html">
+			<edit>
+				<find><![CDATA[		<!-- IF U_JABBER and S_JABBER_ENABLED --><dt>{L_JABBER}:</dt> <dd><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;">{L_SEND_JABBER_MESSAGE}</a></dd><!-- ELSEIF USER_JABBER --><dt>{L_JABBER}:</dt> <dd>{USER_JABBER}</dd><!-- ENDIF -->]]></find>
+				<action type="after-add"><![CDATA[		<!-- IF U_CREDCOUNTS or USER_CREDCOUNTS --><dt>{L_CREDCOUNTS}:</dt> <dd><!-- IF U_CREDCOUNTS --><a href="{U_CREDCOUNTS}">{USER_CREDCOUNTS}</a><!-- ELSE -->{USER_CREDCOUNTS}<!-- ENDIF --></dd><!-- ENDIF -->]]></action>
+			</edit>
+		</open>
+		<open src="styles/prosilver/template/ucp_pm_viewmessage.html">
+			<edit>
+				<find><![CDATA[		<!-- IF U_PM or U_EMAIL or U_WWW or U_MSN or U_ICQ or U_YIM or U_AIM or U_JABBER -->]]></find>
+				<inline-edit>
+					<inline-find><![CDATA[U_JABBER]]></inline-find>
+					<inline-action type="after-add"><![CDATA[ or U_CREDCOUNTS]]></inline-action>
+				</inline-edit>
+			</edit>
+			<edit>
+				<find><![CDATA[			<!-- IF U_JABBER --><li class="jabber-icon"><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span>{L_JABBER}</span></a></li><!-- ENDIF -->]]></find>
+				<action type="after-add"><![CDATA[			<!-- IF U_CREDCOUNTS --><li class="credcounts-icon"><a href="{U_CREDCOUNTS}" title="{L_CREDCOUNTS}"><span>{L_CREDCOUNTS}</span></a></li><!-- ENDIF -->]]></action>
+			</edit>
+		</open>
+		<open src="styles/prosilver/template/ucp_profile_profile_info.html">
+			<edit>
+				<find><![CDATA[		<dd><input type="text" name="jabber" id="jabber" maxlength="255" value="{JABBER}" class="inputbox" /></dd>
+	</dl>]]></find>
+				<action type="after-add"><![CDATA[	<dl>
+		<dt><label for="credcounts">{L_UCP_CREDCOUNTS}:</label></dt>
+		<dd><input type="text" name="credcounts" id="credcounts" maxlength="255" value="{CREDCOUNTS}" class="inputbox" /></dd>
+	</dl>]]></action>
+			</edit>
+		</open>
+		<open src="styles/prosilver/template/viewtopic_body.html">
+			<edit>
+				<find><![CDATA[		<!-- IF postrow.U_PM or postrow.U_EMAIL or postrow.U_WWW or postrow.U_MSN or postrow.U_ICQ or postrow.U_YIM or postrow.U_AIM or postrow.U_JABBER -->]]></find>
+				<inline-edit>
+					<inline-find><![CDATA[postrow.U_JABBER]]></inline-find>
+					<inline-action type="after-add"><![CDATA[ or postrow.U_CREDCOUNTS]]></inline-action>
+				</inline-edit>
+			</edit>
+			<edit>
+				<find><![CDATA[					<!-- IF postrow.U_JABBER --><li class="jabber-icon"><a href="{postrow.U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span>{L_JABBER}</span></a></li><!-- ENDIF -->]]></find>
+				<action type="after-add"><![CDATA[					<!-- IF postrow.U_CREDCOUNTS --><li class="credcounts-icon"><a href="{postrow.U_CREDCOUNTS}" title="{L_CREDCOUNTS}"><span>{L_CREDCOUNTS}</span></a></li><!-- ENDIF -->]]></action>
+			</edit>
+		</open>
+		<open src="styles/prosilver/theme/stylesheet.css">
+			<edit>
+				<find><![CDATA[@import url("colours.css");]]></find>
+				<action type="after-add"><![CDATA[@import url("credcounts.css");]]></action>
+			</edit>
+		</open>
+		<php-installer><![CDATA[install.php]]></php-installer>
+		<diy-instructions lang="en"><![CDATA[Go to your ACP and:
+- Refresh templates
+- Refresh imageset
+- Refresh theme
+
+Don't forget to run the install.php file.]]></diy-instructions>
+	</action-group>
+</mod>

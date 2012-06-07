@@ -1,0 +1,6 @@
+/* CredCounts Profile Link
+---------------------------------------- */
+
+.credcounts-icon, .credcounts-icon a		{ background: none top left no-repeat; }
+ul.profile-icons li.credcounts-icon	{ width: {IMG_ICON_CONTACT_CREDCOUNTS_WIDTH}px; height: {IMG_ICON_CONTACT_CREDCOUNTS_HEIGHT}px; }
+.credcounts-icon, .credcounts-icon a		{ background-image: url("{IMG_ICON_CONTACT_CREDCOUNTS_SRC}"); }
